@@ -378,10 +378,10 @@
   var screens = {
     start: function () {
       return '<h1 tabindex="-1">Credit Transfer Guide – Sociology (JFKI)</h1>' +
-        '<p class="lead">This guide aims to answer most questions about getting credit for courses taken <strong>outside the JFKI</strong>, whether at another FU department or at a university abroad, toward the sociology modules of the BA or MA North American Studies. <strong>Please read it carefully.</strong></p>' +
+        '<p class="lead">This guide aims to answer most questions about transferring credits for courses taken <strong>outside the JFKI</strong>, whether at another FU department or at a university abroad, toward the sociology modules of the BA or MA North American Studies. <strong>Please read it carefully.</strong></p>' +
         "<p>First, check which requirements apply to the course(s) you wish to receive credit for. Then make sure you provide <strong>all the necessary documents together in one request</strong>. The guide shows you which ones, depending on your program, your study regulations and where you take the course.</p>" +
         "<p>If you want pre-approval, send your request <strong>before the lecture period starts</strong>. Requests during the semester cannot be processed.</p>" +
-        "<p>If questions remain after going through the guide, contact " + EMAIL + ".</p>" +
+        "<p>If questions remain after going through the guide, feel free to contact " + EMAIL + ".</p>" +
         '<div class="box"><h3>General rules</h3>' + list([
           "Courses should follow social-science approaches with a sociology focus. Methods-driven courses are especially suitable.",
           "The course requirements must be clear, including what the final examination is. A completed course can count <strong>either as participation credit or as grade credit</strong>. Many courses do not have a separate participation credit; in that case, completing the course (e.g. by submitting the required essays) counts as completion for participation credit. <strong>When you request approval, state whether you want participation credit or grade credit.</strong> (Not applicable for the BA VM Sociology Module under the 2026 regulation.)",
@@ -428,7 +428,7 @@
       var reg = REGS[state.reg];
       var methodsRule = m.theoryOnly
         ? "Courses should follow social-science approaches with a sociology focus. This module is theory-driven: purely methodological courses (e.g. from a statistics department) cannot be credited for it."
-        : "Courses should follow social-science approaches with a sociology focus, especially methods-driven courses. Courses with a strong methodological component (e.g. from a statistics department) can also be credited if they provide a rigorous introduction to methods, in particular quantitative methods and econometrics.";
+        : "Courses should follow social-science approaches with a sociology focus, especially methods-driven courses. Courses with a strong methodological component, in particular quantitative methods (e.g. at the statistics department), can be eligible for transfer even if they contain little sociological theory, for example if they introduce programming languages relevant to social-science research (R, Python, Stata, etc.) and enable students to do their own research.";
       var rules = [
         methodsRule,
         "The course must end with a required final exam or paper. Courses that can be completed through participation alone cannot be credited."
@@ -503,7 +503,7 @@
     var showSemester = isFU && state.program === "BA";
     var before = "<li>Check that the course meets the required points for your sociology module.</li>" +
       (showSemester ? semesterStep() : "") +
-      "<li><strong>Before the lecture period starts</strong>, send the course description (final exam, empirical component, methods taught), ideally the syllabus or an email from the instructor, and your current transcript to " + EMAIL + "." + creditChoice + "</li>" +
+      "<li><strong>Before the lecture period starts</strong>, send the following to " + EMAIL + ":" + list(["<strong>Required:</strong> your current Campus Management transcript (Leistungsübersicht)", "<strong>Required:</strong> the course description (final exam, empirical component, methods taught)", "<strong>Ideally, if available:</strong> the syllabus or an email from the instructor explaining the methodological approach"]) + (creditChoice ? "<p style='margin:6px 0 0'>" + creditChoice.trim() + "</p>" : "") + "</li>" +
       "<li>If the course fits, you receive written confirmation by email that it will be credited once you complete it successfully.</li>";
     var nBefore = showSemester ? 4 : 3;
     var transcript = isFU
