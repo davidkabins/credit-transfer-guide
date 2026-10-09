@@ -1,0 +1,565 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Credit Transfer Guide – Sociology (JFKI)</title>
+<meta name="description" content="Credit transfer for sociology modules in the BA and MA North American Studies at the John F. Kennedy Institute, Freie Universität Berlin.">
+<style>
+  :root {
+    --blue: #003366;
+    --blue-soft: #e8eef5;
+    --red: #cc0000;
+    --grey: #5f6368;
+    --line: #dde2e8;
+    --bg: #ffffff;
+    --panel: #f5f7fa;
+    --text: #1d1d1f;
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 16px; line-height: 1.55;
+    display: flex; flex-direction: column; min-height: 100vh;
+  }
+  a { color: var(--blue); text-underline-offset: 2px; }
+  a:hover { color: var(--red); }
+
+  /* Header */
+  .site-header { border-bottom: 2px solid var(--blue); }
+  .site-header .inner { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 0; }
+  .site-header img { height: 34px; width: auto; display: block; }
+  .site-header .name { color: var(--grey); font-size: 14px; text-align: right; }
+
+  .wrap { width: 100%; max-width: 920px; margin: 0 auto; padding: 0 16px; }
+  main { flex: 1; padding: 28px 0 48px; }
+
+  /* Progress */
+  .progress { margin-bottom: 26px; }
+  .progress .label { font-size: 13px; color: var(--grey); margin-bottom: 6px; }
+  .progress .bar { display: flex; gap: 6px; }
+  .progress .bar span { flex: 1; height: 5px; border-radius: 3px; background: var(--line); }
+  .progress .bar span.done { background: var(--blue); }
+  .progress .bar span.current { background: var(--red); }
+
+  h1 { color: var(--blue); font-size: 28px; line-height: 1.25; margin: 0 0 14px; letter-spacing: -.3px; }
+  h1:focus { outline: none; }
+  h2 { color: var(--blue); font-size: 19px; margin: 28px 0 10px; }
+  h3 { color: var(--blue); font-size: 16px; margin: 0 0 8px; }
+  p { margin: 0 0 12px; }
+  .lead { font-size: 17px; }
+  .muted { color: var(--grey); }
+  ul { margin: 6px 0 12px; padding-left: 20px; }
+  li { margin: 4px 0; }
+
+  /* Choice cards */
+  .cards { display: grid; gap: 16px; margin: 22px 0 8px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+  .card {
+    appearance: none; text-align: left; font: inherit; color: inherit; cursor: pointer;
+    background: var(--bg); border: 2px solid var(--line); border-radius: var(--radius);
+    padding: 26px 22px; min-height: 130px; display: flex; flex-direction: column; justify-content: center; gap: 6px;
+    position: relative; transition: border-color .15s, box-shadow .15s, transform .15s;
+  }
+  .card::before { content: ""; position: absolute; left: -2px; right: -2px; top: -2px; height: 4px; border-radius: var(--radius) var(--radius) 0 0; background: transparent; transition: background .15s; }
+  .card:hover, .card:focus-visible { border-color: var(--blue); box-shadow: 0 4px 14px rgba(0,51,102,.12); transform: translateY(-1px); outline: none; }
+  .card:hover::before, .card:focus-visible::before { background: var(--red); }
+  .card .title { font-size: 20px; font-weight: 650; color: var(--blue); line-height: 1.3; }
+  .card .sub { font-size: 14px; color: var(--grey); }
+
+  /* Buttons */
+  .actions { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 30px; flex-wrap: wrap; }
+  .btn {
+    appearance: none; font: inherit; font-weight: 600; cursor: pointer; border-radius: 8px;
+    padding: 11px 22px; border: 2px solid var(--blue); background: var(--blue); color: #fff;
+  }
+  .btn:hover, .btn:focus-visible { background: #00264d; border-color: #00264d; outline: none; }
+  .btn.secondary { background: transparent; color: var(--blue); }
+  .btn.secondary:hover, .btn.secondary:focus-visible { background: var(--blue-soft); }
+  .btn.big { font-size: 17px; padding: 13px 34px; }
+
+  /* Boxes */
+  .box { background: var(--panel); border-left: 4px solid var(--blue); border-radius: 0 var(--radius) var(--radius) 0; padding: 16px 20px; margin: 20px 0; }
+  .box h3 { margin-bottom: 6px; }
+  .box ul { margin-bottom: 0; }
+  .note { background: var(--blue-soft); border-radius: var(--radius); padding: 12px 16px; margin: 16px 0; }
+  .warn { border-left-color: var(--red); }
+
+  /* Requirements */
+  .facts { color: var(--grey); font-size: 15px; margin: -6px 0 16px; }
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 18px 0; }
+  .col { border: 1px solid var(--line); border-radius: var(--radius); padding: 18px 20px; }
+  .col.req { border-top: 4px solid var(--blue); }
+  .col.nice { border-top: 4px solid #a1a0a0; }
+  .col h3 { font-size: 15px; text-transform: uppercase; letter-spacing: .5px; }
+  .col.nice h3 { color: var(--grey); }
+
+  /* Checklist */
+  .summary { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 18px; }
+  .chip { font-size: 13px; background: var(--blue-soft); color: var(--blue); border-radius: 999px; padding: 3px 11px; font-weight: 600; }
+  .phase { margin: 26px 0 8px; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .phase h2 { margin: 0; }
+  .tag { font-size: 12px; font-weight: 700; letter-spacing: .4px; text-transform: uppercase; border-radius: 4px; padding: 2px 7px; border: 1px solid var(--grey); color: var(--grey); }
+  .tag.req { border-color: var(--blue); color: var(--blue); }
+  ol.steps { list-style: none; counter-reset: step var(--start, 0); padding: 0; margin: 10px 0; }
+  ol.steps > li { counter-increment: step; position: relative; padding: 14px 16px 14px 60px; border: 1px solid var(--line); border-radius: var(--radius); margin: 10px 0; }
+  ol.steps > li::before {
+    content: counter(step); position: absolute; left: 16px; top: 13px; width: 30px; height: 30px; border-radius: 50%;
+    background: var(--blue); color: #fff; font-weight: 700; font-size: 14px; display: flex; align-items: center; justify-content: center;
+  }
+  ol.steps ul { margin: 6px 0 0; }
+  .sem-list { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 18px; margin-top: 8px; }
+  .sem-list h4 { margin: 0 0 2px; font-size: 14px; color: var(--blue); }
+  .sem-list ul { margin: 0; }
+
+  /* Links */
+  .links { list-style: none; padding: 0; margin: 16px 0; }
+  .links li { border-bottom: 1px solid var(--line); margin: 0; }
+  .links a { display: block; padding: 14px 4px; text-decoration: none; }
+  .links a .t { font-weight: 600; }
+  .links a .u { display: block; font-size: 13px; color: var(--grey); word-break: break-all; }
+  .links a:hover .t { color: var(--red); }
+
+  footer { border-top: 1px solid var(--line); color: var(--grey); font-size: 14px; }
+  footer .inner { padding: 18px 0 24px; }
+
+  @media (max-width: 640px) {
+    h1 { font-size: 23px; }
+    .site-header img { height: 26px; }
+    .site-header .name { font-size: 12px; }
+    .cols, .sem-list { grid-template-columns: 1fr; }
+    .card { min-height: 0; padding: 20px 18px; }
+    ol.steps > li { padding-left: 54px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap inner">
+    <img src="jfki-logo.png" alt="John F. Kennedy Institute for North American Studies">
+    <div class="name">Credit Transfer Guide – Sociology</div>
+  </div>
+</header>
+
+<main>
+  <div class="wrap" id="app" aria-live="polite"></div>
+</main>
+
+<footer>
+  <div class="wrap inner">Department of Sociology, John F. Kennedy Institute, FU Berlin · Contact: david.straub@fu-berlin.de</div>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+
+  var EMAIL = "david.straub@fu-berlin.de";
+  var CREDIT_PAGE = "https://www.jfki.fu-berlin.de/en/academics/ba/Anerkennung_von_Studienleistungen/index.html";
+  var ERASMUS_PAGE = "https://www.jfki.fu-berlin.de/en/academics/studyabroad/studyabroad_erasmus/index.html";
+
+  /* ---------- Content ---------- */
+
+  var PROGRAMS = {
+    BA: {
+      label: "BA North American Studies",
+      cutoff: "winter semester 2026/27",
+      oldReg: "ba2018", newReg: "ba2026",
+      oldYear: "2018", newYear: "2026",
+      validUntil: "summer semester 2031"
+    },
+    MA: {
+      label: "MA North American Studies",
+      cutoff: "winter semester 2025/26",
+      oldReg: "ma2015", newReg: "ma2025",
+      oldYear: "2015", newYear: "2025",
+      validUntil: "summer semester 2028"
+    }
+  };
+
+  var REGS = {
+    ba2018: { label: "2018 regulation", modules: ["om18", "vma", "vmb"] },
+    ba2026: { label: "2026 regulation", modules: ["om26", "vm26"] },
+    ma2015: { label: "2015 regulation", modules: ["maA", "maB", "maC15"] },
+    ma2025: { label: "2025 regulation", modules: ["maA", "maB", "maC25"] }
+  };
+
+  var OM_REQ = [
+    "Introduction to sociological theory (classical and/or contemporary)",
+    "Introduction to empirical research methods that enables students to do their own research"
+  ];
+  var OM_NICE = [
+    "A focus on North American (US/Canadian) society or North American sociological traditions",
+    "Hands-on methods work (exercises, small data analysis)",
+    "Introduction to statistics or statistical software"
+  ];
+  var VM_NICE = [
+    "A North American focus",
+    "Case studies or the student's own small project",
+    "Introduction to quantitative methods",
+    "Introduction to programming languages and statistical methods"
+  ];
+  var VM_COMMON = [
+    "Theoretical and empirical work, with reflection on methods",
+    "Introduction to empirical research methods that enables students to do their own research"
+  ];
+
+  var MODULES = {
+    om18: {
+      name: "OM Sociology", type: "Orientation module", lp: "10 LP",
+      semester: "winter + summer semester",
+      required: OM_REQ, nice: OM_NICE
+    },
+    om26: {
+      name: "OM Sociology", type: "Orientation module", lp: "10 LP",
+      semester: "summer semester",
+      required: OM_REQ, nice: OM_NICE
+    },
+    vma: {
+      name: "VM A – Social Structures", type: "Advanced module", lp: "10 LP",
+      semester: "winter semester",
+      required: ["Sociological analysis of social structures, e.g. inequality and stratification, networks, institutions, social control, social problems"].concat(VM_COMMON),
+      nice: VM_NICE
+    },
+    vmb: {
+      name: "VM B – Social Processes", type: "Advanced module", lp: "10 LP",
+      semester: "summer semester",
+      required: ["Sociological analysis of social processes, e.g. social change, identities and groups, integration, social mobility, social movements, social crises"].concat(VM_COMMON),
+      nice: VM_NICE
+    },
+    vm26: {
+      name: "VM Sociology", type: "Advanced module", lp: "5 LP",
+      semester: "winter semester",
+      required: ["Sociological analysis of social structures and/or processes in a sub-field, e.g. labour and housing markets, religion, education, welfare state, tax state, financial or pension institutions"].concat(VM_COMMON),
+      nice: VM_NICE,
+      note: "Under the 2026 regulation, the VM Sociology requires that you have completed the OM Sociology.",
+      noCreditChoice: true
+    },
+    maA: {
+      name: "Module A – Sociological Theories of North America", short: "Module A", type: "Sociological Theories of North America", lp: "10 LP",
+      semester: "offered once a year",
+      required: [
+        "Classical and/or contemporary sociological theory as the main focus (not just one session of a topic course)",
+        "Theory at an advanced (graduate) level: comparing approaches and judging their strengths and weaknesses",
+        "A comparative view of societies (comparing countries or regions)"
+      ],
+      nice: [
+        "North American theory traditions (Du Bois, pragmatism, Chicago School, symbolic interactionism, structural functionalism)",
+        "Classics such as Marx, Weber and Durkheim",
+        "History of sociology or philosophy of science",
+        "Links between theory and empirical research or research methods"
+      ],
+      theoryOnly: true
+    },
+    maB: {
+      name: "Module B – Social Systems, Institutions and Orders", short: "Module B", type: "Social Systems, Institutions and Orders", lp: "10 LP",
+      semester: "offered once a year",
+      required: [
+        "Sociological analysis of institutions in one or more areas of society (e.g. labour or housing markets, education, religion, welfare/tax state, finance)",
+        "A comparative view (comparing countries or historical cases)",
+        "Explaining the causes and consequences of institutions with sociological theory (e.g. inequality, segregation)"
+      ],
+      nice: [
+        "A North American focus",
+        "Institutional history, path dependence, colonial legacies",
+        "Historical-comparative or quantitative methods",
+        "Introduction to programming languages and statistical methods"
+      ]
+    },
+    maC15: {
+      name: "Module C – Researching the Social Process", short: "Module C", type: "Researching the Social Process", lp: "10 LP",
+      semester: "offered once a year",
+      required: [
+        "Empirical research practice",
+        "Research methodology",
+        "Formulating a research question and carrying it out methodically"
+      ],
+      nice: [
+        "Statistical methods (e.g. regression, econometrics, comparative statistics)",
+        "Hands-on use of statistical software or a programming language (e.g. Stata, R, Python)",
+        "A comparative design (across countries, regions or time)",
+        "Computational social science or digital data collection (e.g. web scraping, text data)",
+        "Engaging with the state of research",
+        "A North American focus"
+      ]
+    },
+    maC25: {
+      name: "Module C – Researching the Social Process", short: "Module C", type: "Researching the Social Process", lp: "10 LP",
+      semester: "offered once a year",
+      required: [
+        "Empirical research practice: the student's own, largely self-directed research project or research seminar",
+        "Statistical methods (e.g. regression, econometrics, comparative statistics)",
+        "Hands-on use of statistical software or a programming language (e.g. Stata, R, Python)",
+        "Formulating a research question and carrying it out methodically"
+      ],
+      nice: [
+        "Sociological context",
+        "A comparative design (across countries, regions or time)",
+        "Computational social science or digital data collection (e.g. web scraping, text data)",
+        "Engaging with the state of research and middle-range theories",
+        "A North American focus"
+      ]
+    }
+  };
+
+  var LOCATIONS = {
+    fu: { label: "At FU Berlin", chip: "At FU Berlin" },
+    erasmus: { label: "Abroad – Erasmus+", chip: "Abroad – Erasmus+" },
+    other: { label: "Abroad – other exchange / free mover", chip: "Abroad – other exchange / free mover" }
+  };
+
+  var LINKS = [
+    ["Online Learning Agreement portal", "https://www.learning-agreement.eu/"],
+    ["JFKI Sociology – Erasmus", "https://www.jfki.fu-berlin.de/en/faculty/sociology/erasmus/index.html"],
+    ["FU Direct Exchange", "https://www.fu-berlin.de/en/studium/international/studium_ausland/direkt/index.html"],
+    ["JFKI Credit Transfer (BA)", "https://www.jfki.fu-berlin.de/en/academics/ba/Anerkennung_von_Studienleistungen/index.html"],
+    ["JFKI Credit Transfer (MA)", "https://www.jfki.fu-berlin.de/en/academics/ma/Anerkennung/index.html"],
+    ["JFKI Examination Board", "https://www.jfki.fu-berlin.de/en/academics/Pruefungsausschuss/index.html"],
+    ["JFKI Academic Advisement Office", "https://www.jfki.fu-berlin.de/en/academics/advisement/index.html"]
+  ];
+
+  /* ---------- Helpers ---------- */
+
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+  function list(items) {
+    return "<ul>" + items.map(function (i) { return "<li>" + i + "</li>"; }).join("") + "</ul>";
+  }
+  function ext(url, text) {
+    return '<a href="' + esc(url) + '" target="_blank" rel="noopener">' + text + " ↗</a>";
+  }
+  function formLine() {
+    return "<em>The form is available on the " + ext(CREDIT_PAGE, "JFKI Credit Transfer page") + ".</em>";
+  }
+
+  /* ---------- State & navigation ---------- */
+
+  var TOTAL_STEPS = 6; // screens 2–7
+  var state = { screen: "start" };
+  var app = document.getElementById("app");
+
+  function go(next) {
+    state = Object.assign({}, state, next);
+    try { history.pushState(state, ""); } catch (e) {}
+    render(true);
+  }
+  function back() { history.back(); }
+
+  window.addEventListener("popstate", function (e) {
+    state = e.state || { screen: "start" };
+    render(true);
+  });
+
+  function progress(step) {
+    var bars = "";
+    for (var i = 1; i <= TOTAL_STEPS; i++) {
+      bars += '<span class="' + (i < step ? "done" : i === step ? "current" : "") + '"></span>';
+    }
+    return '<div class="progress" aria-label="Step ' + step + " of " + TOTAL_STEPS + '"><div class="label">Step ' +
+      step + " of " + TOTAL_STEPS + '</div><div class="bar">' + bars + "</div></div>";
+  }
+  function cards(options) {
+    return '<div class="cards">' + options.map(function (o) {
+      return '<button class="card" type="button" data-go=\'' + esc(JSON.stringify(o.go)) + "'>" +
+        '<span class="title">' + o.title + "</span>" + (o.sub ? '<span class="sub">' + o.sub + "</span>" : "") + "</button>";
+    }).join("") + "</div>";
+  }
+  function backBtn() {
+    return '<button class="btn secondary" type="button" data-back>← Back</button>';
+  }
+
+  /* ---------- Screens ---------- */
+
+  var screens = {
+    start: function () {
+      return '<h1 tabindex="-1">Credit Transfer Guide – Sociology (JFKI)</h1>' +
+        '<p class="lead">This guide aims to answer most questions about getting credit for courses taken <strong>outside the JFKI</strong>, whether at another FU department or at a university abroad, toward the sociology modules of the BA or MA North American Studies. <strong>Please read it carefully.</strong></p>' +
+        "<p>First, check which requirements apply to the course(s) you wish to receive credit for. Then make sure you provide <strong>all the necessary documents together in one request</strong>. The guide shows you which ones, depending on your program, your study regulations and where you take the course.</p>" +
+        "<p>If you want pre-approval, send your request <strong>before the lecture period starts</strong>. Requests during the semester cannot be processed.</p>" +
+        "<p>If questions remain after going through the guide, contact " + EMAIL + ".</p>" +
+        '<div class="box"><h3>General rules</h3>' + list([
+          "Courses should follow social-science approaches with a sociology focus. Methods-driven courses are especially suitable.",
+          "The course requirements must be clear, including what the final examination is. A completed course can count <strong>either as participation credit or as grade credit</strong>. Many courses do not have a separate participation credit; in that case, completing the course (e.g. by submitting the required essays) counts as completion for participation credit. <strong>When you request approval, state whether you want participation credit or grade credit.</strong> (Not applicable for the BA VM Sociology Module under the 2026 regulation.)",
+          "A course can only be credited once, and only for the module it was approved for. A grade you have already received cannot be replaced."
+        ]) + "</div>" +
+        '<div class="actions"><span></span><button class="btn big" type="button" data-go=\'{"screen":"program"}\'>Start</button></div>';
+    },
+
+    program: function () {
+      return progress(1) + '<h1 tabindex="-1">Which program are you enrolled in?</h1>' +
+        cards([
+          { title: "BA North American Studies", go: { screen: "regulation", program: "BA" } },
+          { title: "MA North American Studies", go: { screen: "regulation", program: "MA" } }
+        ]) +
+        '<div class="actions">' + backBtn() + "</div>";
+    },
+
+    regulation: function () {
+      var p = PROGRAMS[state.program];
+      return progress(2) + '<h1 tabindex="-1">When did you start your ' + state.program + " North American Studies?</h1>" +
+        cards([
+          { title: "Before " + p.cutoff, sub: p.oldYear + " regulation", go: { screen: "module", reg: p.oldReg } },
+          { title: cap(p.cutoff) + " or later", sub: p.newYear + " regulation", go: { screen: "module", reg: p.newReg } },
+          { title: "Before, but I switched to the " + p.newYear + " regulation", sub: p.newYear + " regulation", go: { screen: "module", reg: p.newReg } }
+        ]) +
+        '<p class="note">Students under the ' + p.oldYear + " regulation can complete their degree until the end of " + p.validUntil + ".</p>" +
+        '<div class="actions">' + backBtn() + "</div>";
+    },
+
+    module: function () {
+      var reg = REGS[state.reg];
+      return progress(3) + '<h1 tabindex="-1">Which module do you wish to receive credit for?</h1>' +
+        '<p class="muted">' + state.program + " North American Studies · " + reg.label + "</p>" +
+        cards(reg.modules.map(function (id) {
+          var m = MODULES[id];
+          var title = m.short || m.name;
+          return { title: title, sub: m.type + " · " + m.lp + " · " + m.semester, go: { screen: "requirements", module: id } };
+        })) +
+        '<div class="actions">' + backBtn() + "</div>";
+    },
+
+    requirements: function () {
+      var m = MODULES[state.module];
+      var reg = REGS[state.reg];
+      var methodsRule = m.theoryOnly
+        ? "Courses should follow social-science approaches with a sociology focus. This module is theory-driven: purely methodological courses (e.g. from a statistics department) cannot be credited for it."
+        : "Courses should follow social-science approaches with a sociology focus, especially methods-driven courses. Courses with a strong methodological component (e.g. from a statistics department) can also be credited if they provide a rigorous introduction to methods, in particular quantitative methods and econometrics.";
+      var rules = [
+        methodsRule,
+        "The course must end with a required final exam or paper. Courses that can be completed through participation alone cannot be credited."
+      ];
+      if (!m.noCreditChoice) {
+        rules.push("The course requirements must be clear, including what the final examination is. A completed course can count <strong>either as participation credit or as grade credit</strong>. Many courses do not have a separate participation credit; in that case, completing the course (e.g. by submitting the required essays) counts as completion for participation credit. <strong>When you request approval, state whether you want participation credit or grade credit.</strong>");
+      }
+      rules.push("A course can only be credited once, and only for the module it was approved for. A grade you have already received cannot be replaced.");
+
+      return progress(4) + '<h1 tabindex="-1">' + m.name + " <span class=\"muted\" style=\"font-weight:400\">(" + reg.label + ")</span></h1>" +
+        '<p class="facts">' + m.lp + " · " + m.semester + "</p>" +
+        (m.note ? '<p class="note">ℹ️ <strong>Note:</strong> ' + m.note + "</p>" : "") +
+        '<div class="cols">' +
+          '<div class="col req"><h3>Required</h3><p class="muted" style="font-size:14px;margin-bottom:4px">The course must cover:</p>' + list(m.required) + "</div>" +
+          '<div class="col nice"><h3>Nice to have</h3><p class="muted" style="font-size:14px;margin-bottom:4px">Preferred, but not required:</p>' + list(m.nice) + "</div>" +
+        "</div>" +
+        '<div class="box"><h3>General rules</h3>' + list(rules) + "</div>" +
+        '<div class="actions">' + backBtn() + '<button class="btn" type="button" data-go=\'{"screen":"location"}\'>Continue →</button></div>';
+    },
+
+    location: function () {
+      return progress(5) + '<h1 tabindex="-1">Where do you aim to take the course?</h1>' +
+        cards([
+          { title: LOCATIONS.fu.label, go: { screen: "checklist", location: "fu" } },
+          { title: LOCATIONS.erasmus.label, go: { screen: "checklist", location: "erasmus" } },
+          { title: LOCATIONS.other.label, go: { screen: "checklist", location: "other" } }
+        ]) +
+        '<div class="actions">' + backBtn() + "</div>";
+    },
+
+    checklist: function () {
+      var m = MODULES[state.module];
+      var chips = '<div class="summary">' +
+        '<span class="chip">' + state.program + "</span>" +
+        '<span class="chip">' + REGS[state.reg].label + "</span>" +
+        '<span class="chip">' + esc(m.short || m.name) + "</span>" +
+        '<span class="chip">' + LOCATIONS[state.location].chip + "</span></div>";
+      var creditChoice = m.noCreditChoice ? "" : " State whether you want <strong>participation credit or grade credit</strong>.";
+      var body = state.location === "erasmus" ? erasmusSteps(creditChoice) : standardSteps(creditChoice);
+      return progress(6) + '<h1 tabindex="-1">Your checklist</h1>' + chips + body +
+        '<div class="actions">' + backBtn() + '<button class="btn" type="button" data-go=\'{"screen":"links"}\'>Useful links →</button></div>';
+    },
+
+    links: function () {
+      return '<h1 tabindex="-1">Useful links</h1>' +
+        '<ul class="links">' + LINKS.map(function (l) {
+          return '<li><a href="' + esc(l[1]) + '" target="_blank" rel="noopener"><span class="t">' + esc(l[0]) + ' ↗</span><span class="u">' + esc(l[1].replace(/^https:\/\/(www\.)?/, "")) + "</span></a></li>";
+        }).join("") + "</ul>" +
+        '<div class="actions">' + backBtn() + "</div>";
+    }
+  };
+
+  function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+
+  function semesterStep() {
+    return "<li><strong>BA, FU courses only:</strong> a replacement course can only be credited in the semester the JFKI module is offered:" +
+      '<div class="sem-list">' +
+        "<div><h4>2018 regulation</h4>" + list([
+          "OM Sociology: Proseminar in winter semester, Seminar in summer semester",
+          "VM A – Social Structures: winter semester",
+          "VM B – Social Processes: summer semester"
+        ]) + "</div>" +
+        "<div><h4>2026 regulation</h4>" + list([
+          "OM Sociology: summer semester",
+          "VM Sociology: winter semester"
+        ]) + "</div>" +
+      "</div></li>";
+  }
+
+  function standardSteps(creditChoice) {
+    var isFU = state.location === "fu";
+    var showSemester = isFU && state.program === "BA";
+    var before = "<li>Check that the course meets the required points for your sociology module.</li>" +
+      (showSemester ? semesterStep() : "") +
+      "<li><strong>Before the lecture period starts</strong>, send the course description (final exam, empirical component, methods taught), ideally the syllabus or an email from the instructor, and your current transcript to " + EMAIL + "." + creditChoice + "</li>" +
+      "<li>If the course fits, you receive written confirmation by email that it will be credited once you complete it successfully.</li>";
+    var nBefore = showSemester ? 4 : 3;
+    var transcript = isFU
+      ? "the transcript showing the completed course"
+      : "the transcript from your host university showing the completed course";
+    var after = "<li>Fill out the Accreditation Form. " + formLine() + "</li>" +
+      "<li>Combine into <strong>one PDF</strong>: the Accreditation Form, " + transcript + ", the syllabus, and your current Campus Management transcript (Leistungsübersicht).</li>" +
+      "<li>Send it to " + EMAIL + ".</li>" +
+      "<li>After it has been signed, forward it to the head of the examination board.</li>";
+
+    return '<div class="phase"><h2>Before the course: pre-approval</h2><span class="tag">Recommended, not required</span></div>' +
+      '<ol class="steps" style="--start:0">' + before + "</ol>" +
+      '<p class="note warn" style="border-left:4px solid var(--red);border-radius:0 10px 10px 0">Without pre-approval, credit cannot be guaranteed.</p>' +
+      '<div class="phase"><h2>After the course: credit transfer</h2><span class="tag req">Required</span></div>' +
+      '<ol class="steps" style="--start:' + nBefore + '">' + after + "</ol>";
+  }
+
+  function erasmusSteps(creditChoice) {
+    return '<p class="note">For the Erasmus+ application, the Online Learning Agreement and all other steps of the exchange, see the ' + ext(ERASMUS_PAGE, "JFKI Erasmus page") + ".</p>" +
+      '<div class="phase"><h2>Before your exchange: course approval</h2></div>' +
+      '<ol class="steps" style="--start:0">' +
+        "<li>Check that the course(s) abroad meet the required points for your sociology module.</li>" +
+        "<li>Send the course description, syllabus, your current transcript and your Learning Agreement / Supplement to " + EMAIL + "." + creditChoice + "</li>" +
+        "<li>If the courses fit, they will be signed.</li>" +
+      "</ol>" +
+      '<div class="phase"><h2>After your exchange: credit transfer</h2><span class="tag req">Required</span></div>' +
+      '<ol class="steps" style="--start:3">' +
+        "<li>Fill out the Accreditation Form. " + formLine() + "</li>" +
+        "<li>Combine into <strong>one PDF</strong>: the Accreditation Form, the signed Learning Agreement, your current Campus Management transcript (Leistungsübersicht), and the transcript from your host university.</li>" +
+        "<li>Send it to " + EMAIL + ".</li>" +
+        "<li>After it has been signed, forward it to the head of the examination board.</li>" +
+      "</ol>";
+  }
+
+  /* ---------- Render ---------- */
+
+  function render(moveFocus) {
+    var fn = screens[state.screen] || screens.start;
+    app.innerHTML = fn();
+    if (moveFocus) {
+      window.scrollTo(0, 0);
+      var h = app.querySelector("h1");
+      if (h) h.focus({ preventScroll: true });
+    }
+  }
+
+  app.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-go],[data-back]");
+    if (!b) return;
+    if (b.hasAttribute("data-back")) { back(); return; }
+    go(JSON.parse(b.getAttribute("data-go")));
+  });
+
+  try { history.replaceState(state, ""); } catch (e) {}
+  render(false);
+})();
+</script>
+</body>
+</html>
