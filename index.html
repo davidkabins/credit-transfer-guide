@@ -380,8 +380,13 @@
       return '<h1 tabindex="-1">Credit Transfer Guide – Sociology (JFKI)</h1>' +
         '<p class="lead">This guide aims to answer most questions about transferring credits for courses taken <strong>outside the JFKI</strong>, whether at another FU department or at a university abroad, toward the sociology modules of the BA or MA North American Studies. <strong>Please read it carefully.</strong></p>' +
         "<p>First, check which requirements apply to the course(s) you wish to receive credit for. Then make sure you provide <strong>all the necessary documents together in one request</strong>. The guide shows you which ones, depending on your program, your study regulations and where you take the course.</p>" +
-        "<p>If you want pre-approval, send your request <strong>before the lecture period starts</strong>. Requests during the semester cannot be processed.</p>" +
+        "<p>If you want pre-approval for a course at another FU department, send your request <strong>by the end of the first week of the lecture period</strong> at the latest.</p>" +
         "<p>If questions remain after going through the guide, feel free to contact " + EMAIL + ".</p>" +
+        '<div class="box warn"><h3>Please note before you send a request</h3>' + list([
+          "<strong>Semester rule and module swaps:</strong> Courses that are part of the study program must be taken in the semester in which they are offered. Swapping with other JFKI modules will not be granted, unless it is the last course you need to complete your degree, as shown in your most recent transcript.",
+          "<strong>Deadline for FU courses:</strong> Requests for courses at other FU departments must be sent, with all documents, <strong>by the end of the first week of the lecture period</strong> at the latest. Later requests will not be processed. Erasmus+ Learning Agreements can be sent at any time.",
+          "<strong>Complete requests only:</strong> Incomplete requests (e.g. a missing transcript or course description) will not be processed."
+        ]) + "</div>" +
         '<div class="box"><h3>General rules</h3>' + list([
           "Courses should follow social-science approaches with a sociology focus. Methods-driven courses are especially suitable.",
           "The course requirements must be clear, including what the final examination is. A completed course can count <strong>either as participation credit or as grade credit</strong>. Many courses do not have a separate participation credit; in that case, completing the course (e.g. by submitting the required essays) counts as completion for participation credit. <strong>When you request approval, state whether you want participation credit or grade credit.</strong> (Not applicable for the BA VM Sociology Module under the 2026 regulation.)",
@@ -503,7 +508,7 @@
     var showSemester = isFU && state.program === "BA";
     var before = "<li>Check that the course meets the required points for your sociology module.</li>" +
       (showSemester ? semesterStep() : "") +
-      "<li><strong>Before the lecture period starts</strong>, send the following to " + EMAIL + ":" + list(["<strong>Required:</strong> your current Campus Management transcript (Leistungsübersicht)", "<strong>Required:</strong> the course description (final exam, empirical component, methods taught)", "<strong>Ideally, if available:</strong> the syllabus or an email from the instructor explaining the methodological approach"]) + (creditChoice ? "<p style='margin:6px 0 0'>" + creditChoice.trim() + "</p>" : "") + "</li>" +
+      "<li><strong>" + (isFU ? "By the end of the first week of the lecture period at the latest" : "Before the lecture period starts") + "</strong>, send the following to " + EMAIL + ":" + list(["<strong>Required:</strong> your current Campus Management transcript (Leistungsübersicht)", "<strong>Required:</strong> the course description (final exam, empirical component, methods taught)", "<strong>Ideally, if available:</strong> the syllabus or an email from the instructor explaining the methodological approach"]) + (creditChoice ? "<p style='margin:6px 0 0'>" + creditChoice.trim() + "</p>" : "") + "</li>" +
       "<li>If the course fits, you receive written confirmation by email that it will be credited once you complete it successfully.</li>";
     var nBefore = showSemester ? 4 : 3;
     var transcript = isFU
