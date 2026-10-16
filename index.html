@@ -110,9 +110,43 @@
     background: var(--blue); color: #fff; font-weight: 700; font-size: 14px; display: flex; align-items: center; justify-content: center;
   }
   ol.steps ul { margin: 6px 0 0; }
-  .sem-list { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 18px; margin-top: 8px; }
-  .sem-list h4 { margin: 0 0 2px; font-size: 14px; color: var(--blue); }
-  .sem-list ul { margin: 0; }
+  .deadline { margin: 0; }
+
+  /* Form */
+  .field { margin: 18px 0; }
+  .lbl { display: block; font-weight: 600; color: var(--blue); margin-bottom: 6px; }
+  .lbl .opt { font-weight: 400; color: var(--grey); font-size: 14px; }
+  .hint { font-size: 14px; color: var(--grey); margin: -2px 0 8px; }
+  input[type=text], input[type=email], select, textarea {
+    width: 100%; font: inherit; color: var(--text); background: #fff;
+    padding: 10px 12px; border: 2px solid var(--line); border-radius: 8px;
+  }
+  input[type=text]:focus, input[type=email]:focus, select:focus, textarea:focus { border-color: var(--blue); outline: none; }
+  textarea { min-height: 110px; resize: vertical; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+  .err { display: none; color: var(--red); font-size: 14px; margin-top: 5px; }
+  .invalid .err { display: block; }
+  .invalid input[type=text], .invalid input[type=email], .invalid select, .invalid textarea { border-color: var(--red); }
+  .invalid .yn label, .invalid .filebox { border-color: var(--red); }
+  .yn { display: flex; gap: 10px; flex-wrap: wrap; }
+  .yn label { display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 600; border: 2px solid var(--line); border-radius: 8px; padding: 9px 18px; }
+  .yn label:has(input:checked) { border-color: var(--blue); background: var(--blue-soft); color: var(--blue); }
+  .yn input, .checks input { accent-color: var(--blue); width: 18px; height: 18px; margin: 0; flex: none; }
+  .q { border: 1px solid var(--line); border-radius: var(--radius); padding: 16px 18px; margin: 12px 0; }
+  .q > p { font-weight: 600; margin-bottom: 4px; }
+  .q.invalid { border-color: var(--red); }
+  .checks label { display: flex; gap: 10px; align-items: flex-start; padding: 7px 0; cursor: pointer; }
+  .checks input { margin-top: 3px; }
+  .filebox { border: 2px dashed var(--line); border-radius: var(--radius); padding: 16px 18px; }
+  .vh { position: absolute; width: 1px; height: 1px; opacity: 0; overflow: hidden; }
+  .filebox label.btn:focus-within { box-shadow: 0 0 0 3px var(--blue-soft); }
+  .files { list-style: none; padding: 0; margin: 10px 0 0; }
+  .files li { display: flex; justify-content: space-between; align-items: center; gap: 10px; background: var(--panel); border-radius: 8px; padding: 8px 12px; margin: 6px 0; font-size: 15px; }
+  .files li span { word-break: break-all; }
+  .linkbtn { appearance: none; background: none; border: 0; font: inherit; font-size: 14px; color: var(--red); cursor: pointer; text-decoration: underline; padding: 0; flex: none; }
+  .ready { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; border: 2px solid var(--blue); border-radius: var(--radius); padding: 18px 20px; margin: 18px 0; }
+  .ready .fname { font-weight: 700; color: var(--blue); word-break: break-all; }
+  .actions .right { display: flex; gap: 12px; flex-wrap: wrap; }
 
   /* Links */
   .links { list-style: none; padding: 0; margin: 16px 0; }
@@ -129,7 +163,7 @@
     h1 { font-size: 23px; }
     .site-header img { height: 26px; }
     .site-header .name { font-size: 12px; }
-    .cols, .sem-list { grid-template-columns: 1fr; }
+    .cols, .grid2 { grid-template-columns: 1fr; }
     .card { min-height: 0; padding: 20px 18px; }
     ol.steps > li { padding-left: 54px; }
   }
@@ -152,6 +186,7 @@
   <div class="wrap inner">Department of Sociology, John F. Kennedy Institute, FU Berlin · Contact: david.straub@fu-berlin.de</div>
 </footer>
 
+<script src="pdf-lib.min.js" defer></script>
 <script>
 (function () {
   "use strict";
@@ -304,6 +339,20 @@
     }
   };
 
+  // Module part of the PDF file name: Lastname_BA_OM.pdf etc.
+  var FILE_CODES = { om18: "OM", om26: "OM", vma: "VM_A", vmb: "VM_B", vm26: "VM", maA: "A", maB: "B", maC15: "C", maC25: "C" };
+
+  // BA only: when the JFKI module is offered (semester rule for FU courses)
+  var OFFERED = {
+    om18: "Proseminar in the winter semester, Seminar in the summer semester",
+    vma: "winter semester",
+    vmb: "summer semester",
+    om26: "summer semester",
+    vm26: "winter semester"
+  };
+
+  var EXAM_TYPES = ["Written exam", "Term paper", "Project report", "Other"];
+
   var LOCATIONS = {
     fu: { label: "At FU Berlin", chip: "At FU Berlin" },
     erasmus: { label: "Abroad – Erasmus+", chip: "Abroad – Erasmus+" },
@@ -339,7 +388,7 @@
 
   /* ---------- State & navigation ---------- */
 
-  var TOTAL_STEPS = 6; // screens 2–7
+  var TOTAL_STEPS = 11; // program … download
   var state = { screen: "start" };
   var app = document.getElementById("app");
 
@@ -457,24 +506,153 @@
     location: function () {
       return progress(5) + '<h1 tabindex="-1">Where do you aim to take the course?</h1>' +
         cards([
-          { title: LOCATIONS.fu.label, go: { screen: "checklist", location: "fu" } },
-          { title: LOCATIONS.erasmus.label, go: { screen: "checklist", location: "erasmus" } },
-          { title: LOCATIONS.other.label, go: { screen: "checklist", location: "other" } }
+          { title: LOCATIONS.fu.label, go: { screen: "preapproval", location: "fu" } },
+          { title: LOCATIONS.erasmus.label, go: { screen: "preapproval", location: "erasmus" } },
+          { title: LOCATIONS.other.label, go: { screen: "preapproval", location: "other" } }
         ]) +
         '<div class="actions">' + backBtn() + "</div>";
     },
 
-    checklist: function () {
+    preapproval: function () {
       var m = MODULES[state.module];
-      var chips = '<div class="summary">' +
-        '<span class="chip">' + state.program + "</span>" +
-        '<span class="chip">' + REGS[state.reg].label + "</span>" +
-        '<span class="chip">' + esc(m.short || m.name) + "</span>" +
-        '<span class="chip">' + LOCATIONS[state.location].chip + "</span></div>";
-      var creditChoice = m.noCreditChoice ? "" : " State whether you want <strong>participation credit or grade credit</strong>.";
-      var body = state.location === "erasmus" ? erasmusSteps(creditChoice) : standardSteps(creditChoice);
-      return progress(6) + '<h1 tabindex="-1">Your checklist</h1>' + chips + body +
+      var loc = state.location;
+      var deadline = loc === "fu"
+        ? "<strong>FU courses:</strong> by the end of the first week of the lecture period. Later requests will not be processed."
+        : loc === "other"
+          ? "<strong>Courses abroad (other exchange / free mover):</strong> before the lecture period starts."
+          : "<strong>Erasmus+:</strong> at any time.";
+      return progress(6) + '<h1 tabindex="-1">Pre-approval</h1>' + chips() +
+        "<p>Pre-approval is <strong>recommended, but not required</strong>. With pre-approval, you can be sure the course will be credited" +
+        (m.noCreditChoice ? "" : " for the stated participation or grade credit") +
+        " once you complete it. Without pre-approval, credit cannot be guaranteed.</p>" +
+        "<p>You can request pre-approval right here:</p>" +
+        '<ol class="steps" style="--start:0">' +
+          "<li>Answer a few short questions to check whether your request is eligible.</li>" +
+          "<li>Enter your details and information about the course.</li>" +
+          "<li>Upload your current transcript and, if available, the syllabus (<strong>PDF files only</strong>).</li>" +
+          "<li>Download the compiled PDF file and email it to " + EMAIL + ".</li>" +
+        "</ol>" +
+        '<div class="box warn"><h3>Deadline</h3><p class="deadline">' + deadline + "</p></div>" +
+        (loc === "erasmus" ? erasmusNote() : "") +
+        '<div class="box"><h3>After the course</h3><p class="deadline">Once you have received your grade, credit is formally recognised through the Accreditation Form (see the ' + ext(CREDIT_PAGE, "JFKI Credit Transfer page") + ").</p></div>" +
+        '<div class="actions">' + backBtn() + '<button class="btn" type="button" data-go=\'{"screen":"eligibility"}\'>Start pre-approval request →</button></div>';
+    },
+
+    eligibility: function () {
+      var qs = questions();
+      return progress(7) + '<h1 tabindex="-1">Is your request eligible?</h1>' + chips() +
+        '<p class="muted">Please answer all questions.</p>' +
+        qs.map(function (q) {
+          var hidden = q.parent && form.elig[q.parent] !== "yes";
+          return '<div class="q" data-wrap="elig-' + q.id + '"' + (hidden ? " hidden" : "") + "><p>" + q.text + "</p>" +
+            (q.hint ? '<p class="hint" style="margin:0 0 8px">' + q.hint + "</p>" : "") +
+            yesNo("elig." + q.id, form.elig[q.id]) +
+            '<div class="err">Please answer this question.</div></div>';
+        }).join("") +
+        '<div class="actions">' + backBtn() + '<button class="btn" type="button" data-action="eligibility">Continue →</button></div>';
+    },
+
+    rejected: function () {
+      var q = questions().filter(function (x) { return x.id === state.reason; })[0];
+      return '<h1 tabindex="-1">Your request cannot be approved</h1>' +
+        '<div class="box warn"><p class="deadline">' + (q ? q.reason : "") + "</p></div>" +
+        "<p>If you think you answered a question incorrectly, go back and check your answers.</p>" +
         '<div class="actions">' + backBtn() + '<button class="btn" type="button" data-go=\'{"screen":"links"}\'>Useful links →</button></div>';
+    },
+
+    details: function () {
+      var sems = "";
+      for (var i = 1; i <= 13; i++) {
+        var v = String(i);
+        sems += '<option value="' + v + '"' + (form.sem === v ? " selected" : "") + ">" + semLabel(v) + "</option>";
+      }
+      return progress(8) + '<h1 tabindex="-1">Your details</h1>' +
+        '<p class="note">Your information stays on your device. Nothing you enter or upload is sent or stored by this website; it is only used to create your PDF file.</p>' +
+        '<div class="grid2">' +
+          textField("first", "First name") +
+          textField("last", "Last name") +
+        "</div>" +
+        '<div class="grid2">' +
+          textField("sid", "Student ID (Matrikelnummer)", { err: "Please enter your student ID (numbers only).", mode: "numeric" }) +
+          textField("email", "Email", { type: "email", err: "Please enter a valid email address." }) +
+        "</div>" +
+        '<div class="field" data-wrap="sem"><label class="lbl" for="f-sem">Current study semester</label>' +
+          '<select id="f-sem" data-f="sem"><option value="">Please select</option>' + sems + "</select>" +
+          '<div class="err">Please select your current study semester.</div></div>' +
+        '<div class="actions">' + backBtn() + '<button class="btn" type="button" data-action="details">Continue →</button></div>';
+    },
+
+    course: function () {
+      var m = MODULES[state.module];
+      var uniHint = state.location === "fu" ? "e.g. FU Berlin, Department of Political and Social Sciences" : "e.g. University of Toronto, Department of Sociology";
+      var exams = EXAM_TYPES.map(function (t) {
+        return '<option value="' + t + '"' + (form.exam === t ? " selected" : "") + ">" + t + "</option>";
+      }).join("");
+      return progress(9) + '<h1 tabindex="-1">The course</h1>' + chips() +
+        textField("title", "Course title") +
+        textField("uni", "University / department offering the course", { placeholder: uniHint }) +
+        '<div class="grid2">' +
+          textField("instructor", "Instructor", { optional: true }) +
+          textField("credits", "Credits (LP / ECTS)", { placeholder: "e.g. 10 LP or 6 ECTS" }) +
+        "</div>" +
+        areaField("desc", "Short course description", "Content and topics of the course.") +
+        areaField("methods", "Methods taught", "e.g. regression analysis, interviews, R / Stata / Python") +
+        '<div class="field" data-wrap="empirical"><span class="lbl">Empirical component</span>' +
+          '<p class="hint">Do students analyse data themselves or carry out their own research project?</p>' +
+          yesNo("empirical", form.empirical) +
+          '<div class="err">Please answer yes or no.</div></div>' +
+        areaField("empiricalText", "Briefly explain", "", "short") +
+        '<div class="grid2">' +
+          '<div class="field" data-wrap="exam"><label class="lbl" for="f-exam">Type of final exam</label>' +
+            '<select id="f-exam" data-f="exam"><option value="">Please select</option>' + exams + "</select>" +
+            '<div class="err">Please select the type of final exam.</div></div>' +
+          textField("examText", "Details of the final exam", { placeholder: "e.g. 15-page term paper, 90-minute exam" }) +
+        "</div>" +
+        (m.noCreditChoice
+          ? '<p class="note">Participation or grade credit: not applicable for the VM Sociology under the 2026 regulation.</p>'
+          : '<div class="field" data-wrap="credit"><span class="lbl">Do you want participation credit or grade credit?</span>' +
+              '<div class="yn">' + radio("credit", "participation", "Participation credit", form.credit) + radio("credit", "grade", "Grade credit", form.credit) + "</div>" +
+              '<div class="err">Please choose participation credit or grade credit.</div></div>') +
+        '<div class="field"><span class="lbl">Which of the required points does the course cover?</span>' +
+          '<p class="hint">Tick all that apply. Your answers appear in the PDF file.</p>' +
+          '<div class="checks">' + m.required.map(function (r, i) {
+            var key = state.module + ":" + i;
+            return '<label><input type="checkbox" data-cover="' + key + '"' + (form.covers[key] ? " checked" : "") + "><span>" + r + "</span></label>";
+          }).join("") + "</div></div>" +
+        '<div class="actions">' + backBtn() + '<button class="btn" type="button" data-action="course">Continue →</button></div>';
+    },
+
+    files: function () {
+      return progress(10) + '<h1 tabindex="-1">Your documents</h1>' +
+        '<p><strong>PDF files only.</strong> Your files are combined with your answers into one PDF file on your device; nothing is uploaded.</p>' +
+        '<div class="field" data-wrap="transcript"><span class="lbl">Current Campus Management transcript (Leistungsübersicht)</span>' +
+          '<div class="filebox">' +
+            (form.transcript ? fileList([form.transcript], "transcript") : filePicker("transcript", "Choose PDF file", false)) +
+          "</div>" +
+          '<div class="err">' + (form.fileErr.transcript || "Please upload your current transcript as a PDF file.") + "</div></div>" +
+        '<div class="field" data-wrap="syllabi"><span class="lbl">Syllabus <span class="opt">(if available)</span></span>' +
+          '<p class="hint">You can also add an email from the instructor explaining the methodological approach.</p>' +
+          '<div class="filebox">' +
+            (form.syllabi.length ? fileList(form.syllabi, "syllabi") : "") +
+            filePicker("syllabi", form.syllabi.length ? "Add another PDF file" : "Choose PDF file(s)", true) +
+          "</div>" +
+          '<div class="err">' + (form.fileErr.syllabi || "") + "</div></div>" +
+        '<div class="actions">' + backBtn() + '<button class="btn" type="button" data-action="files">Continue →</button></div>';
+    },
+
+    download: function () {
+      return progress(11) + '<h1 tabindex="-1">Your pre-approval request</h1>' + chips() +
+        '<div class="ready"><div>Your PDF file:<br><span class="fname">' + esc(fileName()) + "</span></div>" +
+          '<button class="btn big" type="button" data-action="download">Download PDF</button></div>' +
+        '<p class="err" id="dl-err" style="margin-top:-6px"></p>' +
+        '<div class="box warn"><h3>Send this file to ' + EMAIL + "</h3>" +
+          '<p class="deadline">Attach the downloaded PDF file to your email.' +
+          (state.location === "fu" ? " For FU courses: by the end of the first week of the lecture period at the latest." : "") + "</p></div>" +
+        (state.location === "erasmus" ? erasmusNote() : "") +
+        '<div class="actions">' + backBtn() + '<div class="right">' +
+          '<button class="btn secondary" type="button" data-action="another">Start a request for another course</button>' +
+          '<button class="btn" type="button" data-go=\'{"screen":"links"}\'>Useful links →</button>' +
+        "</div></div>";
     },
 
     links: function () {
@@ -488,59 +666,388 @@
 
   function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
 
-  function semesterStep() {
-    return "<li><strong>BA, FU courses only:</strong> a replacement course can only be credited in the semester the JFKI module is offered:" +
-      '<div class="sem-list">' +
-        "<div><h4>2018 regulation</h4>" + list([
-          "OM Sociology: Proseminar in winter semester, Seminar in summer semester",
-          "VM A – Social Structures: winter semester",
-          "VM B – Social Processes: summer semester"
-        ]) + "</div>" +
-        "<div><h4>2026 regulation</h4>" + list([
-          "OM Sociology: summer semester",
-          "VM Sociology: winter semester"
-        ]) + "</div>" +
-      "</div></li>";
+  function chips() {
+    var m = MODULES[state.module];
+    return '<div class="summary">' +
+      '<span class="chip">' + state.program + "</span>" +
+      '<span class="chip">' + REGS[state.reg].label + "</span>" +
+      '<span class="chip">' + esc(m.short || m.name) + "</span>" +
+      '<span class="chip">' + LOCATIONS[state.location].chip + "</span></div>";
   }
 
-  function standardSteps(creditChoice) {
+  function erasmusNote() {
+    return '<p class="note"><strong>Erasmus+ students:</strong> Enter your course information here to receive pre-approval. Your Learning Agreement must still be completed separately on the Erasmus+ Learning Agreement website (see ' +
+      '<a href="#" data-go=\'{"screen":"links"}\'>Useful links</a>). Once it is filled out, send it to ' + EMAIL + " for signing.</p>";
+  }
+
+  /* ---------- Eligibility questions ---------- */
+
+  // reject: the answer that rules the request out. Only questions that apply are returned.
+  function questions() {
     var isFU = state.location === "fu";
-    var showSemester = isFU && state.program === "BA";
-    var before = "<li>Check that the course meets the required points for your sociology module.</li>" +
-      (showSemester ? semesterStep() : "") +
-      "<li><strong>" + (isFU ? "By the end of the first week of the lecture period at the latest" : "Before the lecture period starts") + "</strong>, send the following to " + EMAIL + ":" + list(["<strong>Required:</strong> your current Campus Management transcript (Leistungsübersicht)", "<strong>Required:</strong> the course description (final exam, empirical component, methods taught)", "<strong>Ideally, if available:</strong> the syllabus or an email from the instructor explaining the methodological approach"]) + (creditChoice ? "<p style='margin:6px 0 0'>" + creditChoice.trim() + "</p>" : "") + "</li>" +
-      "<li>If the course fits, you receive written confirmation by email that it will be credited once you complete it successfully.</li>";
-    var nBefore = showSemester ? 4 : 3;
-    var transcript = isFU
-      ? "the transcript showing the completed course"
-      : "the transcript from your host university showing the completed course";
-    var after = "<li>Fill out the Accreditation Form. " + formLine() + "</li>" +
-      "<li>Combine into <strong>one PDF</strong>: the Accreditation Form, " + transcript + ", the syllabus, and your current Campus Management transcript (Leistungsübersicht).</li>" +
-      "<li>Send it to " + EMAIL + ".</li>" +
-      "<li>After it has been signed, forward it to the head of the examination board.</li>";
-
-    return '<div class="phase"><h2>Before the course: pre-approval</h2><span class="tag">Recommended, not required</span></div>' +
-      '<ol class="steps" style="--start:0">' + before + "</ol>" +
-      '<p class="note warn" style="border-left:4px solid var(--red);border-radius:0 10px 10px 0">Without pre-approval, credit cannot be guaranteed.</p>' +
-      '<div class="phase"><h2>After the course: credit transfer</h2><span class="tag req">Required</span></div>' +
-      '<ol class="steps" style="--start:' + nBefore + '">' + after + "</ol>";
+    var m = MODULES[state.module];
+    var qs = [];
+    if (isFU) {
+      qs.push({ id: "jfki", text: "Is the course offered by another JFKI department (e.g. History or Political Science)?" });
+      qs.push({
+        id: "last", parent: "jfki", reject: "no",
+        text: "Is it the last course you need to complete your degree, as shown in your most recent transcript?",
+        reason: "Swapping with other JFKI modules will not be granted, unless it is the last course you need to complete your degree, as shown in your most recent transcript."
+      });
+    }
+    qs.push({
+      id: "credited", reject: "yes",
+      text: "Has this course already been credited for another module?",
+      reason: "A course can only be credited once, and only for the module it was approved for. Since this course has already been credited for another module, it cannot be credited again."
+    });
+    qs.push({
+      id: "replace", reject: "yes",
+      text: "Do you want to replace a grade you have already received in this module?",
+      reason: "A grade you have already received cannot be replaced."
+    });
+    qs.push({
+      id: "docs", reject: "no",
+      text: "Can you provide your current Campus Management transcript (Leistungsübersicht) as a PDF file and the course description?",
+      reason: "Incomplete requests (e.g. a missing transcript or course description) will not be processed."
+    });
+    if (isFU && state.program === "BA") {
+      qs.push({
+        id: "semester", reject: "no",
+        text: "Will you take the course in the semester in which the JFKI module is offered?",
+        hint: esc(m.name) + " is offered in the " + OFFERED[state.module] + ".",
+        reason: "Courses that are part of the study program must be taken in the semester in which they are offered. A course at another FU department can only be credited in the semester in which the JFKI module is offered."
+      });
+    }
+    if (isFU) {
+      qs.push({
+        id: "deadline", reject: "no",
+        text: "Is it currently before the end of the first week of the lecture period?",
+        reason: "Requests for courses at other FU departments must be sent, with all documents, by the end of the first week of the lecture period at the latest. Later requests will not be processed."
+      });
+    }
+    if (state.program === "MA") {
+      qs.push({
+        id: "swapAB", reject: "yes",
+        text: "Do you want to swap between Modules A and B in the same semester?",
+        reason: "Swapping between Modules A and B in the same semester is not possible."
+      });
+    }
+    return qs;
   }
 
-  function erasmusSteps(creditChoice) {
-    return '<p class="note">For the Erasmus+ application, the Online Learning Agreement and all other steps of the exchange, see the ' + ext(ERASMUS_PAGE, "JFKI Erasmus page") + ".</p>" +
-      '<div class="phase"><h2>Before your exchange: course approval</h2></div>' +
-      '<ol class="steps" style="--start:0">' +
-        "<li>Check that the course(s) abroad meet the required points for your sociology module.</li>" +
-        "<li>Send the course description, syllabus, your current transcript and your Learning Agreement / Supplement to " + EMAIL + "." + creditChoice + "</li>" +
-        "<li>If the courses fit, they will be signed.</li>" +
-      "</ol>" +
-      '<div class="phase"><h2>After your exchange: credit transfer</h2><span class="tag req">Required</span></div>' +
-      '<ol class="steps" style="--start:3">' +
-        "<li>Fill out the Accreditation Form. " + formLine() + "</li>" +
-        "<li>Combine into <strong>one PDF</strong>: the Accreditation Form, the signed Learning Agreement, your current Campus Management transcript (Leistungsübersicht), and the transcript from your host university.</li>" +
-        "<li>Send it to " + EMAIL + ".</li>" +
-        "<li>After it has been signed, forward it to the head of the examination board.</li>" +
-      "</ol>";
+  function visibleQuestions() {
+    return questions().filter(function (q) { return !q.parent || form.elig[q.parent] === "yes"; });
+  }
+
+  /* ---------- Form state & fields ---------- */
+
+  // Kept outside the history state: files cannot be stored there, and the
+  // data should survive Back/Forward within the session.
+  var form = newForm();
+  function newForm(keep) {
+    var f = {
+      first: "", last: "", sid: "", email: "", sem: "",
+      title: "", uni: "", instructor: "", credits: "", desc: "", methods: "",
+      empirical: "", empiricalText: "", exam: "", examText: "", credit: "",
+      covers: {}, elig: {}, transcript: null, syllabi: [], fileErr: {}
+    };
+    if (keep) ["first", "last", "sid", "email", "sem"].forEach(function (k) { f[k] = keep[k]; });
+    return f;
+  }
+
+  function textField(key, label, o) {
+    o = o || {};
+    return '<div class="field" data-wrap="' + key + '"><label class="lbl" for="f-' + key + '">' + label +
+      (o.optional ? ' <span class="opt">(optional)</span>' : "") + "</label>" +
+      '<input id="f-' + key + '" type="' + (o.type || "text") + '" data-f="' + key + '" value="' + esc(form[key]) + '"' +
+      (o.placeholder ? ' placeholder="' + esc(o.placeholder) + '"' : "") +
+      (o.mode ? ' inputmode="' + o.mode + '"' : "") + ' autocomplete="off">' +
+      '<div class="err">' + (o.err || "Please fill in this field.") + "</div></div>";
+  }
+  function areaField(key, label, hint, size) {
+    return '<div class="field" data-wrap="' + key + '"><label class="lbl" for="f-' + key + '">' + label + "</label>" +
+      (hint ? '<p class="hint">' + hint + "</p>" : "") +
+      '<textarea id="f-' + key + '" data-f="' + key + '"' + (size === "short" ? ' style="min-height:70px"' : "") + ">" + esc(form[key]) + "</textarea>" +
+      '<div class="err">Please fill in this field.</div></div>';
+  }
+  function radio(name, value, label, current) {
+    return '<label><input type="radio" name="' + name + '" value="' + value + '" data-f="' + name + '"' + (current === value ? " checked" : "") + ">" + label + "</label>";
+  }
+  function yesNo(name, current) {
+    return '<div class="yn">' + radio(name, "yes", "Yes", current) + radio(name, "no", "No", current) + "</div>";
+  }
+  function fileList(files, kind) {
+    return '<ul class="files">' + files.map(function (f, i) {
+      return "<li><span>📄 " + esc(f.name) + " · " + f.pages + (f.pages === 1 ? " page" : " pages") + "</span>" +
+        '<button class="linkbtn" type="button" data-remove="' + kind + ":" + i + '">Remove</button></li>';
+    }).join("") + "</ul>";
+  }
+  // Own button instead of the native one, whose label follows the browser language
+  function filePicker(kind, label, multiple) {
+    return '<label class="btn secondary" style="display:inline-block;margin-top:' + (kind === "syllabi" && form.syllabi.length ? "10px" : "0") + '">' +
+      '<input type="file" accept="application/pdf,.pdf" data-file="' + kind + '"' + (multiple ? " multiple" : "") + ' class="vh">' + label + "</label>";
+  }
+  function semLabel(v) {
+    var n = parseInt(v, 10);
+    if (n >= 13) return "13th semester or higher";
+    var suf = n === 1 ? "st" : n === 2 ? "nd" : n === 3 ? "rd" : "th";
+    return n + suf + " semester";
+  }
+
+  // Marks missing fields; returns true if all are valid.
+  function validate(checks) {
+    var first = null;
+    checks.forEach(function (c) {
+      var wrap = app.querySelector('[data-wrap="' + c[0] + '"]');
+      if (!wrap) return;
+      var ok = c[1];
+      wrap.classList.toggle("invalid", !ok);
+      if (!ok && !first) first = wrap;
+    });
+    if (first) {
+      first.scrollIntoView({ block: "center" });
+      var inp = first.querySelector("input, select, textarea");
+      if (inp) inp.focus({ preventScroll: true });
+    }
+    return !first;
+  }
+  function filled(key) { return String(form[key]).trim() !== ""; }
+
+  var actions = {
+    eligibility: function () {
+      var qs = visibleQuestions();
+      var ok = validate(qs.map(function (q) { return ["elig-" + q.id, !!form.elig[q.id]]; }));
+      if (!ok) return;
+      var out = qs.filter(function (q) { return q.reject && form.elig[q.id] === q.reject; })[0];
+      go(out ? { screen: "rejected", reason: out.id } : { screen: "details" });
+    },
+    details: function () {
+      var ok = validate([
+        ["first", filled("first")], ["last", filled("last")],
+        ["sid", /^\d{4,12}$/.test(form.sid.trim())],
+        ["email", /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())],
+        ["sem", filled("sem")]
+      ]);
+      if (ok) go({ screen: "course" });
+    },
+    course: function () {
+      var m = MODULES[state.module];
+      var checks = ["title", "uni", "credits", "desc", "methods"].map(function (k) { return [k, filled(k)]; });
+      checks.push(["empirical", filled("empirical")], ["empiricalText", filled("empiricalText")], ["exam", filled("exam")], ["examText", filled("examText")]);
+      if (!m.noCreditChoice) checks.push(["credit", filled("credit")]);
+      if (validate(checks)) go({ screen: "files" });
+    },
+    files: function () {
+      form.fileErr.transcript = "";
+      if (validate([["transcript", !!form.transcript]])) go({ screen: "download" });
+    },
+    download: function (btn) {
+      var errEl = document.getElementById("dl-err");
+      errEl.style.display = "none";
+      btn.disabled = true;
+      btn.textContent = "Creating PDF…";
+      buildPdf().then(function (bytes) {
+        var blob = new Blob([bytes], { type: "application/pdf" });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement("a");
+        a.href = url; a.download = fileName();
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(function () { URL.revokeObjectURL(url); }, 60000);
+      }).catch(function (e) {
+        errEl.textContent = "The PDF file could not be created (" + (e && e.message ? e.message : e) + "). Please check your uploaded files and try again.";
+        errEl.style.display = "block";
+      }).then(function () {
+        btn.disabled = false;
+        btn.textContent = "Download PDF";
+      });
+    },
+    another: function () {
+      form = newForm(form);
+      go({ screen: "module", module: null, location: null, reason: null });
+    }
+  };
+
+  function addFiles(kind, fileListObj) {
+    var picked = Array.prototype.slice.call(fileListObj);
+    form.fileErr[kind] = "";
+    Promise.all(picked.map(function (f) {
+      if (!/\.pdf$/i.test(f.name) && f.type !== "application/pdf") {
+        return Promise.reject(new Error('"' + f.name + '" is not a PDF file. Please upload PDF files only.'));
+      }
+      return f.arrayBuffer().then(function (buf) {
+        return window.PDFLib.PDFDocument.load(buf, { ignoreEncryption: true }).then(function (doc) {
+          return { name: f.name, bytes: buf, pages: doc.getPageCount() };
+        }, function () {
+          throw new Error('"' + f.name + '" could not be read as a PDF file.');
+        });
+      });
+    })).then(function (docs) {
+      if (kind === "transcript") form.transcript = docs[0];
+      else form.syllabi = form.syllabi.concat(docs);
+    }, function (e) {
+      form.fileErr[kind] = e.message;
+    }).then(function () {
+      render(false);
+      if (form.fileErr[kind]) {
+        var w = app.querySelector('[data-wrap="' + kind + '"]');
+        if (w) w.classList.add("invalid");
+      }
+    });
+  }
+
+  /* ---------- PDF ---------- */
+
+  function fileName() {
+    var last = form.last.trim().replace(/\s+/g, "-").replace(/[^\p{L}\p{N}-]/gu, "") || "Lastname";
+    return last + "_" + state.program + "_" + FILE_CODES[state.module] + ".pdf";
+  }
+
+  // The standard PDF fonts only cover the Windows-1252 character set.
+  var WIN = (function () {
+    var s = "€‚ƒ„…†‡ˆ‰Š‹ŒŽ‘’“”•–—˜™š›œžŸ";
+    for (var c = 32; c < 127; c++) s += String.fromCharCode(c);
+    for (c = 161; c < 256; c++) s += String.fromCharCode(c);
+    return s;
+  })();
+  function clean(str) {
+    return Array.from(String(str).replace(/\r\n?/g, "\n").replace(/[\t ]/g, " ")).map(function (ch) {
+      if (ch === "\n" || WIN.indexOf(ch) >= 0) return ch;
+      var base = ch.normalize("NFD").replace(/[̀-ͯ]/g, "");
+      if (base && Array.from(base).every(function (b) { return WIN.indexOf(b) >= 0; })) return base;
+      return { "ł": "l", "Ł": "L", "đ": "d", "Đ": "D", "ı": "i", "→": "->" }[ch] || "?";
+    }).join("");
+  }
+  function wrap(str, font, size, maxW) {
+    var out = [];
+    clean(str).split("\n").forEach(function (par) {
+      var words = par.split(" ").filter(Boolean);
+      if (!words.length) { out.push(""); return; }
+      var line = "";
+      words.forEach(function (w) {
+        while (font.widthOfTextAtSize(w, size) > maxW) {
+          var i = w.length - 1;
+          while (i > 1 && font.widthOfTextAtSize(w.slice(0, i), size) > maxW) i--;
+          if (line) { out.push(line); line = ""; }
+          out.push(w.slice(0, i));
+          w = w.slice(i);
+        }
+        var t = line ? line + " " + w : w;
+        if (font.widthOfTextAtSize(t, size) <= maxW) line = t;
+        else { out.push(line); line = w; }
+      });
+      if (line) out.push(line);
+    });
+    return out;
+  }
+
+  function buildPdf() {
+    var L = window.PDFLib;
+    if (!L) return Promise.reject(new Error("PDF library not loaded"));
+    var m = MODULES[state.module];
+    var name = form.first.trim() + " " + form.last.trim();
+    var doc, font, bold, page, y;
+    var W = 595.28, H = 841.89, M = 56, LABEL_W = 150;
+    var BLUE = L.rgb(0, 0.2, 0.4), GREY = L.rgb(0.37, 0.39, 0.41), BLACK = L.rgb(0.11, 0.11, 0.12), LINE = L.rgb(0.8, 0.83, 0.87);
+
+    function newPage() { page = doc.addPage([W, H]); y = H - M; }
+    function ensure(h) { if (y - h < M + 24) newPage(); }
+    function draw(t, x, f, size, color) { page.drawText(t, { x: x, y: y, size: size, font: f, color: color || BLACK }); }
+    function rule() { page.drawLine({ start: { x: M, y: y }, end: { x: W - M, y: y }, thickness: 0.8, color: LINE }); }
+    function section(t) {
+      ensure(60);
+      y -= 18; draw(clean(t), M, bold, 12.5, BLUE);
+      y -= 7; rule(); y -= 16;
+    }
+    function field(label, value) {
+      var lines = wrap(value || "–", font, 10.5, W - 2 * M - LABEL_W);
+      var labels = wrap(label, bold, 10, LABEL_W - 10);
+      var n = Math.max(lines.length, labels.length);
+      for (var i = 0; i < n; i++) {
+        ensure(14);
+        if (labels[i]) draw(labels[i], M, bold, 10, GREY);
+        if (lines[i]) draw(lines[i], M + LABEL_W, font, 10.5);
+        y -= 14;
+      }
+      y -= 4;
+    }
+    function block(label, value) {
+      ensure(30);
+      draw(clean(label), M, bold, 10, GREY); y -= 14;
+      wrap(value, font, 10.5, W - 2 * M).forEach(function (l) { ensure(14); draw(l, M, font, 10.5); y -= 14; });
+      y -= 6;
+    }
+    function check(on, t) {
+      var lines = wrap(t, font, 10.5, W - 2 * M - 28);
+      lines.forEach(function (l, i) {
+        ensure(14);
+        if (i === 0) draw(on ? "[x]" : "[  ]", M, bold, 10.5, on ? BLUE : GREY);
+        draw(l, M + 28, font, 10.5);
+        y -= 14;
+      });
+      y -= 3;
+    }
+
+    return L.PDFDocument.create().then(function (d) {
+      doc = d;
+      doc.setTitle("Pre-approval request – " + name + " – " + (m.short || m.name));
+      doc.setAuthor(name);
+      doc.setCreator("Credit Transfer Guide – Sociology (JFKI)");
+      return Promise.all([doc.embedFont(L.StandardFonts.Helvetica), doc.embedFont(L.StandardFonts.HelveticaBold)]);
+    }).then(function (fonts) {
+      font = fonts[0]; bold = fonts[1];
+      newPage();
+      draw("Pre-approval request", M, bold, 20, BLUE); y -= 18;
+      var today = new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+      draw(clean("Sociology (JFKI) · Credit Transfer Guide · created on " + today), M, font, 10, GREY); y -= 12;
+      page.drawLine({ start: { x: M, y: y }, end: { x: W - M, y: y }, thickness: 2, color: BLUE }); y -= 6;
+
+      section("Student");
+      field("Name", name);
+      field("Student ID", form.sid.trim());
+      field("Email", form.email.trim());
+      field("Program", PROGRAMS[state.program].label + " (" + REGS[state.reg].label + ")");
+      field("Current study semester", semLabel(form.sem));
+
+      section("Request");
+      field("Module", m.name + " (" + m.lp + ")");
+      field("Where the course is taken", LOCATIONS[state.location].label);
+      field("Credit", m.noCreditChoice ? "Not applicable (VM Sociology, 2026 regulation)" : form.credit === "grade" ? "Grade credit" : "Participation credit");
+
+      section("Course");
+      field("Course title", form.title);
+      field("University / department", form.uni);
+      field("Instructor", form.instructor.trim() || "Not specified");
+      field("Credits", form.credits);
+      field("Type of final exam", form.exam + ": " + form.examText);
+      field("Empirical component", (form.empirical === "yes" ? "Yes" : "No") + " – " + form.empiricalText);
+      block("Short course description", form.desc);
+      block("Methods taught", form.methods);
+
+      section("Required points covered (student's assessment)");
+      m.required.forEach(function (r, i) { check(!!form.covers[state.module + ":" + i], r); });
+
+      section("Eligibility check (student's answers)");
+      visibleQuestions().forEach(function (q) { field(form.elig[q.id] === "yes" ? "Yes" : "No", q.text); });
+
+      section("Attached documents");
+      var att = [{ label: "Current transcript (Leistungsübersicht)", f: form.transcript }].concat(form.syllabi.map(function (f) { return { label: "Syllabus / additional document", f: f }; }));
+      att.forEach(function (a, i) { field((i + 1) + ". " + a.label, a.f.name + " (" + a.f.pages + (a.f.pages === 1 ? " page)" : " pages)")); });
+
+      var summaryPages = doc.getPageCount();
+      return att.reduce(function (p, a) {
+        return p.then(function () {
+          return L.PDFDocument.load(a.f.bytes, { ignoreEncryption: true }).then(function (src) {
+            return doc.copyPages(src, src.getPageIndices());
+          }).then(function (pages) { pages.forEach(function (pg) { doc.addPage(pg); }); });
+        });
+      }, Promise.resolve()).then(function () {
+        var total = doc.getPageCount();
+        for (var i = 0; i < summaryPages; i++) {
+          doc.getPage(i).drawText(clean(fileName() + " · page " + (i + 1) + " of " + total), { x: M, y: 30, size: 8.5, font: font, color: GREY });
+        }
+        return doc.save();
+      });
+    });
   }
 
   /* ---------- Render ---------- */
@@ -556,11 +1063,48 @@
   }
 
   app.addEventListener("click", function (e) {
+    var r = e.target.closest("[data-remove]");
+    if (r) {
+      var parts = r.getAttribute("data-remove").split(":");
+      if (parts[0] === "transcript") form.transcript = null;
+      else form.syllabi.splice(+parts[1], 1);
+      render(false);
+      return;
+    }
+    var a = e.target.closest("[data-action]");
+    if (a) { actions[a.getAttribute("data-action")](a); return; }
     var b = e.target.closest("[data-go],[data-back]");
     if (!b) return;
+    e.preventDefault();
     if (b.hasAttribute("data-back")) { back(); return; }
     go(JSON.parse(b.getAttribute("data-go")));
   });
+
+  function onField(e) {
+    var t = e.target;
+    if (t.hasAttribute("data-cover")) { form.covers[t.getAttribute("data-cover")] = t.checked; return; }
+    if (t.hasAttribute("data-file")) { if (t.files.length) addFiles(t.getAttribute("data-file"), t.files); return; }
+    var key = t.getAttribute("data-f");
+    if (!key) return;
+    if (key.indexOf("elig.") === 0) {
+      var id = key.slice(5);
+      form.elig[id] = t.value;
+      // show or hide follow-up questions
+      app.querySelectorAll(".q").forEach(function (q) {
+        var qd = questions().filter(function (x) { return "elig-" + x.id === q.getAttribute("data-wrap"); })[0];
+        if (qd && qd.parent) q.hidden = form.elig[qd.parent] !== "yes";
+      });
+    } else {
+      form[key] = t.value;
+    }
+    var w = t.closest(".invalid");
+    if (w) w.classList.remove("invalid");
+  }
+  // Text fields update on every keystroke; radios, checkboxes, selects and
+  // file inputs only on "change" (browsers fire both events for them).
+  function isText(t) { return t.tagName === "TEXTAREA" || (t.tagName === "INPUT" && (t.type === "text" || t.type === "email")); }
+  app.addEventListener("input", function (e) { if (isText(e.target)) onField(e); });
+  app.addEventListener("change", function (e) { if (!isText(e.target)) onField(e); });
 
   try { history.replaceState(state, ""); } catch (e) {}
   render(false);
