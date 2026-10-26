@@ -429,11 +429,9 @@
       return '<h1 tabindex="-1">Credit Transfer Guide – Sociology (JFKI)</h1>' +
         '<p class="lead">This guide aims to answer most questions about transferring credits for courses taken <strong>outside the JFKI</strong>, whether at another FU department or at a university abroad, toward the sociology modules of the BA or MA North American Studies. <strong>Please read it carefully.</strong></p>' +
         "<p>First, check which requirements apply to the course(s) you wish to receive credit for. Then make sure you provide <strong>all the necessary documents together in one request</strong>. The guide shows you which ones, depending on your program, your study regulations and where you take the course.</p>" +
-        "<p>If you want pre-approval for a course at another FU department, send your request <strong>by the end of the first week of the lecture period</strong> at the latest.</p>" +
         "<p>If questions remain after going through the guide, feel free to contact " + EMAIL + ".</p>" +
         '<div class="box warn"><h3>Please note before you send a request</h3>' + list([
           "<strong>Semester rule and module swaps:</strong> Courses that are part of the study program must be taken in the semester in which they are offered. Swapping with other JFKI modules will not be granted, unless it is the last course you need to complete your degree, as shown in your most recent transcript.",
-          "<strong>Deadline for FU courses:</strong> Requests for courses at other FU departments must be sent, with all documents, <strong>by the end of the first week of the lecture period</strong> at the latest. Later requests will not be processed. Erasmus+ Learning Agreements can be sent at any time.",
           "<strong>Complete requests only:</strong> Incomplete requests (e.g. a missing transcript or course description) will not be processed."
         ]) + "</div>" +
         '<div class="box"><h3>General rules</h3>' + list([
@@ -516,11 +514,7 @@
     preapproval: function () {
       var m = MODULES[state.module];
       var loc = state.location;
-      var deadline = loc === "fu"
-        ? "<strong>FU courses:</strong> by the end of the first week of the lecture period. Later requests will not be processed."
-        : loc === "other"
-          ? "<strong>Courses abroad (other exchange / free mover):</strong> before the lecture period starts."
-          : "<strong>Erasmus+:</strong> at any time.";
+      var deadline = loc === "erasmus" ? "<strong>Erasmus+:</strong> at any time." : "";
       return progress(6) + '<h1 tabindex="-1">Pre-approval</h1>' + chips() +
         "<p>Pre-approval is <strong>recommended, but not required</strong>. With pre-approval, you can be sure the course will be credited" +
         (m.noCreditChoice ? "" : " for the stated participation or grade credit") +
@@ -532,7 +526,7 @@
           "<li>Upload your current transcript and, if available, the syllabus (<strong>PDF files only</strong>).</li>" +
           "<li>Download the compiled PDF file and email it to " + EMAIL + ".</li>" +
         "</ol>" +
-        '<div class="box warn"><h3>Deadline</h3><p class="deadline">' + deadline + "</p></div>" +
+        (deadline ? '<div class="box warn"><h3>Deadline</h3><p class="deadline">' + deadline + "</p></div>" : "") +
         (loc === "erasmus" ? erasmusNote() : "") +
         '<div class="box"><h3>After the course</h3><p class="deadline">Once you have received your grade, credit is formally recognised through the Accreditation Form (see the ' + ext(CREDIT_PAGE, "JFKI Credit Transfer page") + ").</p></div>" +
         '<div class="actions">' + backBtn() + '<button class="btn" type="button" data-go=\'{"screen":"eligibility"}\'>Start pre-approval request →</button></div>';
@@ -646,8 +640,7 @@
           '<button class="btn big" type="button" data-action="download">Download PDF</button></div>' +
         '<p class="err" id="dl-err" style="margin-top:-6px"></p>' +
         '<div class="box warn"><h3>Send this file to ' + EMAIL + "</h3>" +
-          '<p class="deadline">Attach the downloaded PDF file to your email.' +
-          (state.location === "fu" ? " For FU courses: by the end of the first week of the lecture period at the latest." : "") + "</p></div>" +
+          '<p class="deadline">Attach the downloaded PDF file to your email.</p></div>' +
         (state.location === "erasmus" ? erasmusNote() : "") +
         '<div class="actions">' + backBtn() + '<div class="right">' +
           '<button class="btn secondary" type="button" data-action="another">Start a request for another course</button>' +
@@ -716,13 +709,6 @@
         text: "Will you take the course in the semester in which the JFKI module is offered?",
         hint: esc(m.name) + " is offered in the " + OFFERED[state.module] + ".",
         reason: "Courses that are part of the study program must be taken in the semester in which they are offered. A course at another FU department can only be credited in the semester in which the JFKI module is offered."
-      });
-    }
-    if (isFU) {
-      qs.push({
-        id: "deadline", reject: "no",
-        text: "Is it currently before the end of the first week of the lecture period?",
-        reason: "Requests for courses at other FU departments must be sent, with all documents, by the end of the first week of the lecture period at the latest. Later requests will not be processed."
       });
     }
     if (state.program === "MA") {
